@@ -16,4 +16,8 @@ export interface IPropsData {
   setCorrectLink: (param: boolean) => void;
   correctTextarea: boolean;
   setCorrectTextarea: (param: boolean) => void;
+  likes: number;
+  setLikes: (param: number) => void;
+  correctLikes: boolean;
+  setCorrectLikes: (param: boolean) => void;
 }

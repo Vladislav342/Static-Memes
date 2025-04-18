@@ -28,6 +28,10 @@ export const AlertModal = (props: IPropsData) => {
     setCorrectLink,
     correctTextarea,
     setCorrectTextarea,
+    likes,
+    setLikes,
+    correctLikes,
+    setCorrectLikes
   } = props;
 
   const returnJSX = () => (
@@ -40,7 +44,7 @@ export const AlertModal = (props: IPropsData) => {
         className="max-w-auto"
         label="Name"
         labelPlacement="outside"
-        placeholder="Enter your description"
+        placeholder="Name"
         onChange={e => {
           setChangeName(e.target.value);
           setCorrectTextarea(false);
@@ -49,15 +53,29 @@ export const AlertModal = (props: IPropsData) => {
       <Input
         value={changeLink || ''}
         isRequired
-        errorMessage="This field can't be empty."
+        errorMessage="This field can't be empty and must start with http:// or https://"
         isInvalid={correctLink}
         className="max-w-auto"
         label="Link"
         labelPlacement="outside"
-        placeholder="Enter your description"
+        placeholder="Link"
         onChange={e => {
           setChangeLink(e.target.value);
           setCorrectLink(false);
+        }}
+      />
+      <Input
+        value={isNaN(Number(String(likes))) ? '' : String(likes)}
+        isRequired
+        errorMessage="Likes must be from 0 to 99"
+        isInvalid={correctLikes}
+        className="max-w-auto"
+        label="Likes"
+        labelPlacement="outside"
+        placeholder="Likes"
+        onChange={e => {
+          setLikes(Number(e.target.value));
+          setCorrectLikes(false);
         }}
       />
     </>
@@ -134,6 +152,7 @@ export const AlertModal = (props: IPropsData) => {
                 onPress={() => {
                   setChangeName('');
                   setChangeLink('');
+                  setLikes(0);
                   onClose();
                 }}
               >
@@ -143,21 +162,24 @@ export const AlertModal = (props: IPropsData) => {
                 color="primary"
                 onPress={() => {
                   if (
-                    (changeName.length > 2 &&
+                    (
+                      changeName.length > 2 &&
                       changeName.length < 100 &&
-                      changeLink) ||
+                      (changeLink.startsWith('http://') || changeLink.startsWith('https://')) &&
+                      likes >= 0 && 
+                      likes < 100
+                    ) ||
                     typeModal === 'Remove'
                   ) {
                     correctLink && setCorrectLink(false);
                     correctTextarea && setCorrectTextarea(false);
+                    correctLikes && setCorrectLikes(false);
                     buttonClick();
                     onClose();
                   } else {
-                    console.log(changeName);
-                    console.log(changeName.length);
-                    if (changeName.length < 3 || changeName.length > 99)
-                      setCorrectTextarea(true);
-                    if (!changeLink) setCorrectLink(true);
+                    if (changeName.length < 3 || changeName.length > 99) setCorrectTextarea(true);                    
+                    if (!changeLink || (!changeLink.startsWith('http://') && !changeLink.startsWith('https://'))) setCorrectLink(true);
+                    if(likes < 0 || likes > 99) setCorrectLikes(true);
 
                     createToast({
                       title: 'Error',

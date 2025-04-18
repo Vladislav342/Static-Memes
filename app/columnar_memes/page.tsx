@@ -37,13 +37,14 @@ export default function ColumnarMemesPage() {
   const [typeModal, setTypeModal] = useState<string>('');
   const [changeName, setChangeName] = useState<string>('');
   const [changeLink, setChangeLink] = useState<string>('');
+  const [likes, setLikes] = useState<number>(0);
   const [isEdit, setEdit] = useState<boolean>(false);
   const [isCreate, setCreate] = useState<boolean>(false);
   const [isLoading, setLoading] = useState<boolean>(false);
   const [correctTextarea, setCorrectTextarea] = useState<boolean>(false);
   const [correctLink, setCorrectLink] = useState<boolean>(false);
-
-  let num: number = 0;
+  const [correctLikes, setCorrectLikes] = useState<boolean>(false);
+  const [num, setNum] = useState<number>(0);
 
   const targetRef = React.useRef(null);
   const { moveProps } = useDraggable({
@@ -93,11 +94,17 @@ export default function ColumnarMemesPage() {
           // const data = await getSortedMemesData();
           // setMemes(data);
           let editedMem = memes.findIndex(item => item._id === curMem?._id);
-          console.log('Edit mem: ', editedMem);
           setMemes(prevMemes => {
             const newMemes = [...prevMemes];
+            let newMem = {
+              _id: curMem?._id || '',
+              name: changeName,
+              date: curMem?.date || '',
+              link: changeLink,
+              likes: likes,
+            }
             if(curMem !== null) {
-              newMemes[editedMem] = curMem;
+              newMemes[editedMem] = newMem;
             }
             return newMemes;
           })
@@ -128,7 +135,6 @@ export default function ColumnarMemesPage() {
           // const data = await getSortedMemesData();
           // setMemes(data);
           let removeMem: number = staticMemes.findIndex(item => item._id === curMem?._id);
-          console.log('remove mem: ', removeMem);
           setMemes(prevMemes => {
             const newMemes = [...prevMemes];
             newMemes.splice(removeMem, 1);
@@ -172,10 +178,10 @@ export default function ColumnarMemesPage() {
           // setMemes(data);
           setMemes(prevMemes => {
             let newObj = {
-              _id: `${num}`,
+              _id: `${num + 1}`,
               name: changeName,
               link: changeLink,
-              likes: 0,
+              likes,
               date
             };
             const newMemes = [...prevMemes];
@@ -187,6 +193,7 @@ export default function ColumnarMemesPage() {
             desc: 'The Mem was successfully created',
             typeToast: 'success',
           });
+          setNum(prevNum => prevNum + 1);
         } catch (err: any) {
           createToast({
             title: 'Error',
@@ -213,6 +220,7 @@ export default function ColumnarMemesPage() {
     setCurMem(item);
     setChangeName(item.name || '');
     setChangeLink(item.link || '');
+    setLikes(item.likes);
     onOpen();
   };
 
@@ -220,6 +228,7 @@ export default function ColumnarMemesPage() {
     setTypeModal('Create');
     setChangeName('');
     setChangeLink('');
+    setLikes(0);
     onOpen();
   };
 
@@ -319,6 +328,10 @@ export default function ColumnarMemesPage() {
         setCorrectLink={setCorrectLink}
         correctTextarea={correctTextarea}
         setCorrectTextarea={setCorrectTextarea}
+        likes={likes}
+        setLikes={setLikes}
+        correctLikes={correctLikes}
+        setCorrectLikes={setCorrectLikes}
       />
     </div>
   );
